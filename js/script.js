@@ -54,6 +54,15 @@ $( document ).ready(function() {
       var question_possible_answers = questions_array[picked_question_id].possible_answers;
     }
 
+    else{
+
+        var question_correct_answers = questions_array[picked_question_id].correct_answer.toString();
+        var question_possible_answers = [];
+        question_possible_answers.push("true");
+        question_possible_answers.push("false");
+
+    }
+
     //Show Question to the user
     $("#question").append(questions_array[picked_question_id].title);
 
@@ -87,9 +96,31 @@ $( document ).ready(function() {
 
 
     }
+    else if (question_type =="truefalse"){
 
-    console.log(question_correct_answers + " Correct answers");
-    console.log(question_possible_answers);
+      console.log(questions_array[picked_question_id]);
+
+      $("#possible_answers").append(
+
+        "<span id= " + "0" + ">" +
+        '<input type="radio" name="radio_group" value="' +
+        "0" +  '">' + " " + "True" +
+        "</span>" + "</br>");
+
+        $("#possible_answers").append(
+          "<span id= " + "1" + ">" +
+          '<input type="radio" name="radio_group" value="' +
+          "1" +  '">' + " " + "False" +
+          "</span>" + "</br>");
+
+
+
+    }
+
+
+
+
+
 
 
 
