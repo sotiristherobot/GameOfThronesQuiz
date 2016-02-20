@@ -5,6 +5,8 @@ $( document ).ready(function() {
   //keep track of which questions have been asked already
   var already_picked_questions = [];
   var question_correct_answers = [];
+  var user_score = 0;
+  var picked_question_id;
 
   /* Ajax call to get the data from the webserver */
   $.getJSON( "https://proto.io/en/jobs/candidate-questions/quiz.json",
@@ -13,6 +15,15 @@ $( document ).ready(function() {
       init(data);
       showQuestion(data);
   });
+
+  //update score
+  function updateScore(points){
+
+
+      user_score += questions_array[picked_question_id].points;
+      console.log("Score " + user_score);
+
+  }
 
   function init(data){
     $("#title").append(data.title);
@@ -35,7 +46,7 @@ $( document ).ready(function() {
   //show a question
   function showQuestion(){
 
-    var picked_question_id = pickQuestion();
+    picked_question_id = pickQuestion();
 
     //check if the picked question has already been asked
     while (jQuery.inArray(picked_question_id, already_picked_questions) > -1){
@@ -119,31 +130,79 @@ $( document ).ready(function() {
 
   function validateAnswer(user_answers){
 
-    for (var i = 0; i < user_answers.length; i ++){
+    console.log(user_answers + " user answers");
+    console.log(question_correct_answers + " correct answers");
 
-      if (jQuery.inArray(user_answers[i].toString(), question_correct_answers.toString()) == -1) {
+    question_correct_answers = question_correct_answers.toString();
 
-        console.log("Not found");
+    if (user_answers == question_correct_answers){
 
-        return false;
-      }
+      return true;
 
     }
-    console.log("found");
-    return true;
+
+    else return false;
+
+    //
+    // question_correct_answers = question_correct_answers.toString();
+    //
+    // for (var i = 0;  i < user_answers.length; i++){
+    //
+    //   var user_answer = user_answers[i].toString();
+    //
+    //   if (question_correct_answers.indexOf(user_answer) == -1){
+    //
+    //     console.log("Not found");
+    //
+    //     return false;
+    //
+    //   }
+    //
+    //
+    // }
+    //
+    // return true;
 
   }
 
   //event handler
-
   $( "#submitbtn" ).click(function() {
 
-    //pick user's answers
-    //alert($('input[name=radio_group]:checked', '#possible_answers').val());
-    var user_answers = [];
-    user_answers.push($('input[name=radio_group]:checked', '#possible_answers').val());
+    var question_type = questions_array[picked_question_id].question_type;
 
-    validateAnswer(user_answers);
+    if (question_type == "mutiplechoice-single"){
+      var user_answers = [];
+      user_answers.push($('input[name=radio_group]:checked', '#possible_answers').val());
+
+      //update score if question is answered correctly
+      if (validateAnswer(user_answers))
+        updateScore();
+
+
+    }
+    else if (question_type== "mutiplechoice-multiple") {
+
+      var user_answers = $("#possible_answers input:checkbox:checked").map(function(){
+      return $(this).val();
+      }).get();
+
+      //update score if question is answered correctly
+      if (validateAnswer(user_answers))
+        updateScore();
+
+    }
+
+    else if(question_type == "truefalse"){
+
+      var user_answers = [];
+      user_answers.push(user_answers.push($('input[name=radio_group]:checked', '#possible_answers').val()));
+
+      if (validateAnswer(user_answers))
+        updateScore();
+
+    }
+
+
 
 
 });
