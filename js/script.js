@@ -44,7 +44,38 @@ $( document ).ready(function() {
     }
     already_picked_questions.push(picked_question_id.toString());
 
-    console.log(already_picked_questions);
+    //determine the question type
+    var question_type = questions_array[picked_question_id].question_type;
+
+    if (question_type != "truefalse"){
+      //pick the corresponding correct answers for this question
+      var question_correct_answers = questions_array[picked_question_id].correct_answer;
+      //pick all the possible answers for this question
+      var question_possible_answers = questions_array[picked_question_id].possible_answers;
+    }
+
+    //Show Question to the user
+    $("#question").append(questions_array[picked_question_id].title);
+
+    //depending on the type of the question show the corresponding possible answers
+    if (question_type == "mutiplechoice-single"){
+      console.log(question_type);
+      for (var i = 0; i < question_possible_answers.length; i++){
+
+        console.log(question_possible_answers[i].caption);
+        $("#possible_answers").append(
+
+          "<span id= " + question_possible_answers[i].a_id + ">" +
+          '<input type="radio" name="radio_group" value="' +
+          question_possible_answers[i].a_id +  '">' + " " + question_possible_answers[i].caption +
+          "</span>" + "</br>");
+
+      }
+
+    }
+
+    console.log(question_correct_answers + " Correct answers");
+    console.log(question_possible_answers);
 
 
 
