@@ -4,6 +4,7 @@ $( document ).ready(function() {
   var questions_array = [];
   //keep track of which questions have been asked already
   var already_picked_questions = [];
+  var question_correct_answers = [];
 
   /* Ajax call to get the data from the webserver */
   $.getJSON( "https://proto.io/en/jobs/candidate-questions/quiz.json",
@@ -31,7 +32,6 @@ $( document ).ready(function() {
 
   }
 
-
   //show a question
   function showQuestion(){
 
@@ -49,7 +49,7 @@ $( document ).ready(function() {
 
     if (question_type != "truefalse"){
       //pick the corresponding correct answers for this question
-      var question_correct_answers = questions_array[picked_question_id].correct_answer;
+      question_correct_answers = questions_array[picked_question_id].correct_answer;
       //pick all the possible answers for this question
       var question_possible_answers = questions_array[picked_question_id].possible_answers;
     }
@@ -117,7 +117,36 @@ $( document ).ready(function() {
 
     }
 
+  function validateAnswer(user_answers){
 
+    for (var i = 0; i < user_answers.length; i ++){
+
+      if (jQuery.inArray(user_answers[i].toString(), question_correct_answers.toString()) == -1) {
+
+        console.log("Not found");
+
+        return false;
+      }
+
+    }
+    console.log("found");
+    return true;
+
+  }
+
+  //event handler
+
+  $( "#submitbtn" ).click(function() {
+
+    //pick user's answers
+    //alert($('input[name=radio_group]:checked', '#possible_answers').val());
+    var user_answers = [];
+    user_answers.push($('input[name=radio_group]:checked', '#possible_answers').val());
+
+    validateAnswer(user_answers);
+
+
+});
 
 
 
