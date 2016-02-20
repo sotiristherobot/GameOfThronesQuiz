@@ -2,6 +2,8 @@ $( document ).ready(function() {
 
   //global variables
   var questions_array = [];
+  //keep track of which questions have been asked already
+  var already_picked_questions = [];
 
   /* Ajax call to get the data from the webserver */
   $.getJSON( "https://proto.io/en/jobs/candidate-questions/quiz.json",
@@ -34,7 +36,16 @@ $( document ).ready(function() {
   function showQuestion(){
 
     var picked_question_id = pickQuestion();
-    console.log(picked_question_id);
+
+    //check if the picked question has already been asked
+    while (jQuery.inArray(picked_question_id, already_picked_questions) > -1){
+        console.log("Duplicate detected");
+        picked_question_id = pickQuestion();
+    }
+    already_picked_questions.push(picked_question_id.toString());
+
+    console.log(already_picked_questions);
+
 
 
   }
