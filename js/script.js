@@ -59,10 +59,9 @@ $( document ).ready(function() {
 
     //depending on the type of the question show the corresponding possible answers
     if (question_type == "mutiplechoice-single"){
-      console.log(question_type);
+
       for (var i = 0; i < question_possible_answers.length; i++){
 
-        console.log(question_possible_answers[i].caption);
         $("#possible_answers").append(
 
           "<span id= " + question_possible_answers[i].a_id + ">" +
@@ -71,6 +70,21 @@ $( document ).ready(function() {
           "</span>" + "</br>");
 
       }
+
+    }
+    else if (question_type == "mutiplechoice-multiple"){
+
+      for (var i = 0; i < question_possible_answers.length; i++){
+
+          $("#possible_answers").append(
+
+            "<span id= " + question_possible_answers[i].a_id + ">" +
+            '<input type="checkbox" name="check_group" value="' +
+            question_possible_answers[i].a_id +  '">' + " " + question_possible_answers[i].caption +
+            "</span>" + "</br>");
+
+      }
+
 
     }
 
