@@ -5,3 +5,10 @@
   font-weight: bold;
 
 }
+#fail_message{
+
+  background-color: red;
+  color: white;
+  font-weight: bold;
+
+}

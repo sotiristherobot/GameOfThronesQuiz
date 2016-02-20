@@ -21,7 +21,7 @@ $( document ).ready(function() {
 
 
       user_score += questions_array[picked_question_id].points;
-      console.log("Score " + user_score);
+      // console.log("Score " + user_score);
 
   }
 
@@ -48,11 +48,12 @@ $( document ).ready(function() {
   function showQuestion(){
 
     picked_question_id = pickQuestion();
-    console.log(questions_array);
+    // console.log(questions_array);
     //wipe out everything
     $("#question").empty();
     $("#possible_answers").empty();
     question_correct_answers = [];
+
 
     //check if the picked question has already been asked
     // while (jQuery.inArray(picked_question_id.toString(), already_picked_questions) > -1){
@@ -115,7 +116,7 @@ $( document ).ready(function() {
     }
     else if (question_type =="truefalse"){
 
-      console.log(questions_array[picked_question_id]);
+      // console.log(questions_array[picked_question_id]);
 
       $("#possible_answers").append(
 
@@ -137,7 +138,7 @@ $( document ).ready(function() {
   function validateAnswer(user_answers){
 
     console.log(user_answers + " user answers");
-    console.log(question_correct_answers + " correct answers");
+    //console.log(question_correct_answers + " correct answers");
 
     question_correct_answers = question_correct_answers.toString();
 
@@ -154,45 +155,36 @@ $( document ).ready(function() {
 
       return false;
     }
-    //
-    // question_correct_answers = question_correct_answers.toString();
-    //
-    // for (var i = 0;  i < user_answers.length; i++){
-    //
-    //   var user_answer = user_answers[i].toString();
-    //
-    //   if (question_correct_answers.indexOf(user_answer) == -1){
-    //
-    //     console.log("Not found");
-    //
-    //     return false;
-    //
-    //   }
-    //
-    //
-    // }
-    //
-    // return true;
 
   }
 
   function isFinished(){
 
-    if (questions_array == already_picked_questions)
-      return true;
-    else
-      return false;
+    var test = [];
+    for (var i = 0; i < questions_array.length; i++){
 
+      test.push(questions_array[i].q_id.toString());
+
+    }
+    console.log(test);
+    console.log(already_picked_questions);
+      if (already_picked_questions.toString() == test)
+        return true;
+
+
+      return false;
 
   }
 
   //event handler
-  $( "#submitbtn" ).click(function() {
+  $( "#submitbtn" ).unbind().click(function() {
 
     var question_type = questions_array[picked_question_id].question_type;
 
+    var user_answers = [];
+
     if (question_type == "mutiplechoice-single"){
-      var user_answers = [];
+
       user_answers.push($('input[name=radio_group]:checked', '#possible_answers').val());
 
       //update score if question is answered correctly
@@ -203,10 +195,9 @@ $( document ).ready(function() {
     }
     else if (question_type== "mutiplechoice-multiple") {
 
-      var user_answers = $("#possible_answers input:checkbox:checked").map(function(){
-      return $(this).val();
+      user_answers = $("#possible_answers input:checkbox:checked").map(function(){
+        return $(this).val();
       }).get();
-
       //update score if question is answered correctly
       if (validateAnswer(user_answers))
         updateScore();
@@ -215,25 +206,30 @@ $( document ).ready(function() {
 
     else if(question_type == "truefalse"){
 
-      var user_answers = [];
-      user_answers.push(user_answers.push($('input[name=radio_group]:checked', '#possible_answers').val()));
+      user_answers = [];
+
+      if ($('input[name=radio_group]:checked', '#possible_answers').val() == 1){
+        user_answers.push("false");
+
+      }
+      else{
+
+        user_answers.push("true");
+      }
+
 
       if (validateAnswer(user_answers))
         updateScore();
 
     }
 
-    if (isFinished()){
-
-      console.log("We are finished");
-
-    }
+    if (!isFinished())
+      showQuestion();
     else{
 
-      showQuestion();
+      alert("Score is " + user_score);
 
     }
-
 
 });
 
