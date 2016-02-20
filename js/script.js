@@ -28,7 +28,8 @@ $( document ).ready(function() {
   function init(data){
     $("#title").append(data.title);
     $("#description").append(data.description);
-
+    $("#success_message").hide();
+    $("#fail_message").hide();
     questions_array = data.questions;
 
 
@@ -47,12 +48,17 @@ $( document ).ready(function() {
   function showQuestion(){
 
     picked_question_id = pickQuestion();
+    console.log(questions_array);
+    //wipe out everything
+    $("#question").empty();
+    $("#possible_answers").empty();
+    question_correct_answers = [];
 
     //check if the picked question has already been asked
-    while (jQuery.inArray(picked_question_id, already_picked_questions) > -1){
-        console.log("Duplicate detected");
-        picked_question_id = pickQuestion();
-    }
+    // while (jQuery.inArray(picked_question_id.toString(), already_picked_questions) > -1){
+    //     console.log("Duplicate detected");
+    //     picked_question_id = pickQuestion();
+    // }
     already_picked_questions.push(picked_question_id.toString());
 
     //determine the question type
@@ -136,13 +142,18 @@ $( document ).ready(function() {
     question_correct_answers = question_correct_answers.toString();
 
     if (user_answers == question_correct_answers){
-
+      $("#success_message").show();
+      $("#success_message").delay(3000).fadeOut("slow");
       return true;
 
     }
 
-    else return false;
+    else {
+      $("#fail_message").show();
+      $("#fail_message").delay(3000).fadeOut("slow");
 
+      return false;
+    }
     //
     // question_correct_answers = question_correct_answers.toString();
     //
@@ -162,6 +173,16 @@ $( document ).ready(function() {
     // }
     //
     // return true;
+
+  }
+
+  function isFinished(){
+
+    if (questions_array == already_picked_questions)
+      return true;
+    else
+      return false;
+
 
   }
 
@@ -202,7 +223,16 @@ $( document ).ready(function() {
 
     }
 
+    if (isFinished()){
 
+      console.log("We are finished");
+
+    }
+    else{
+
+      showQuestion();
+
+    }
 
 
 });
