@@ -3,14 +3,14 @@
   background-color: green;
   color: white;
   font-weight: bold;
-
+  padding: 10px;
 }
 #fail_message{
 
   background-color: red;
   color: white;
   font-weight: bold;
-
+  padding: 10px;
 }
 
 #imgsize{

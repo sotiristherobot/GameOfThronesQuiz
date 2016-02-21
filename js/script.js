@@ -1,3 +1,6 @@
+$("#success_message").hide();
+$("#fail_message").hide();
+
 $( document ).ready(function() {
 
   //global variables
@@ -26,14 +29,15 @@ $( document ).ready(function() {
   function resultData(result_data){
 
     calculate_score = result_data;
-    console.log(calculate_score);
+    // console.log(calculate_score);
+
   }
   //update score
   function updateScore(points){
 
 
       user_score += questions_array[picked_question_id].points;
-      // console.log("Score " + user_score);
+      //console.log("Score " + user_score);
 
   }
 
@@ -50,7 +54,7 @@ $( document ).ready(function() {
   //pick and return a random id for question from the pool
   function pickQuestion(){
 
-    var random_question_id =  Math.floor((Math.random() * questions_array.length));
+    var random_question_id =  Math.floor((Math.random() * questions_array.length ));
 
     return random_question_id;
 
@@ -60,12 +64,12 @@ $( document ).ready(function() {
   function showQuestion(){
 
     picked_question_id = pickQuestion();
-    // console.log(questions_array);
+
+
     //wipe out everything
     $("#question").empty();
     $("#possible_answers").empty();
     question_correct_answers = [];
-
 
     //check if the picked question has already been asked
     while(_.contains(already_picked_questions,picked_question_id.toString()))
@@ -74,10 +78,15 @@ $( document ).ready(function() {
         picked_question_id = pickQuestion();
     }
 
+    //to handle the case when we get 0 position in the array but the question id is 1
     if (picked_question_id == 0){
 
-      var tmp_picked_question = 15;
-      already_picked_questions.push(tmp_picked_question.toString());
+      //if question 15 has not already been asked
+      if (_.contains(already_picked_questions, "15") == false){
+         var tmp_picked_question = "15";
+        already_picked_questions.push(tmp_picked_question.toString());
+
+    }
     }
     else
       already_picked_questions.push(picked_question_id.toString());
@@ -87,8 +96,6 @@ $( document ).ready(function() {
 
     //append the image
     $('#image').empty().append('<img src=' + questions_array[picked_question_id].img + ' id="imgsize" ' + '>');
-
-
 
     if (question_type != "truefalse"){
       //pick the corresponding correct answers for this question
@@ -160,57 +167,51 @@ $( document ).ready(function() {
 
   function validateAnswer(user_answers, typeofquestion){
 
-    console.log(user_answers + " user answers");
-    console.log(question_correct_answers + " correct answers");
-    var temp = [];
-    var temp2 = [];
+    // console.log(user_answers + " user answers");
+    // console.log(question_correct_answers + " correct answers");
+
+    var temp_correct_answers = [];
+    var temp_user_answers = [];
   //  console.log(typeof(question_correct_answers));
-    if (typeof(question_correct_answers) == "number"){
-      console.log("number");
-      temp.push(question_correct_answers.toString());
+    if (typeofquestion == "mutiplechoice-single"){
+      //console.log("number");
+      temp_correct_answers.push(question_correct_answers.toString());
     }
     else if (typeofquestion=="truefalse"){
-        console.log(user_answers);
+        // console.log(user_answers);
       if (question_correct_answers == "true"){
-        temp.push("0");}
+        temp_correct_answers.push(0).toString();}
       else if (question_correct_answers == "false")
-        temp.push("1");
+        temp_correct_answers.push(1).toString();
 
-      console.log("temp " + temp);
     }
     else{
       for (var i = 0; i < question_correct_answers.length; i++)
-        temp.push(question_correct_answers[i].toString());
+        temp_correct_answers.push(question_correct_answers[i].toString());
 
     }
 
     if (typeofquestion=="mutiplechoice-single"){
 
-      temp2.push(user_answers.toString());
+      temp_user_answers.push(user_answers.toString());
     }
     else if (typeofquestion=="truefalse"){
-        console.log(user_answers);
+        // console.log(user_answers);
         if (user_answers == "true")
-          temp2.push("0");
+          temp_user_answers.push(0).toString();
         else if (user_answers == "false")
-          temp2.push("1");
+          temp_user_answers.push(1).toString();
 
-          console.log("temp2 " + temp2);
       }
     else{
       for (var j = 0; j < user_answers.length; j++)
-        temp2.push(user_answers[j].toString());
+        temp_user_answers.push(user_answers[j].toString());
     }
+    
+    var array_difference = _.difference(temp_correct_answers,temp_user_answers);
 
-    //console.log(user_answers);
-    //console.log(temp );
+    if (array_difference.length == 0){
 
-    // alert(typeof(temp));
-    // alert(typeof(temp2));
-    // alert(_.isEqual(temp,temp2));
-
-    if ((_.difference(temp,temp2)).length == 0){
-      console.log(temp + " " + temp2);
       $("#success_message").show();
       $("#success_message").delay(3000).fadeOut("slow");
       return true;
@@ -220,9 +221,9 @@ $( document ).ready(function() {
 
       $("#fail_message").show();
       // alert(typeof(question_correct_answers));
-      for (var j=0; j < temp.length; j++){
+      for (var j=0; j < temp_correct_answers.length; j++){
         // alert(temp[j]);
-        $('#' + temp[j]).css("background-color", "yellow");
+        $('#' + temp_correct_answers[j]).css("background-color", "yellow");
 
       }
 
@@ -235,22 +236,20 @@ $( document ).ready(function() {
 
   function isFinished(){
 
-    var test = [];
+    var test_if_finished = [];
     for (var i = 0; i < questions_array.length; i++){
 
-      test.push(questions_array[i].q_id.toString());
+      test_if_finished.push(questions_array[i].q_id.toString());
 
     }
-    // console.log(test);
-    // console.log(already_picked_questions);
-    // console.log("test " + test );
-    // console.log("already picked " + already_picked_questions);
-
-    var kokos = _.difference(test, already_picked_questions);
 
 
-    if (kokos.length == 0){
-        alert("We finish");
+    //check if all questions have been asked
+    var all_questions_asked = _.difference(test_if_finished,already_picked_questions);
+
+    console.log(already_picked_questions);
+    console.log(test_if_finished);
+    if (all_questions_asked.length == 0){
         return true;
       }
 
@@ -318,23 +317,19 @@ $( document ).ready(function() {
 
       //display results according to score
       if (user_score >= calculate_score.results[0].minpoints && user_score <= calculate_score.results[0].maxpoints)
-        $("#possible_answers").append($("<h3>").text(calculate_score.results[0].title));
+        $("#possible_answers").append($("<h3>").text(calculate_score.results[0].title + user_score));
 
       else if (user_score >= calculate_score.results[1].minpoints && user_score <= calculate_score.results[1].maxpoints)
-        $("#possible_answers").append($("<h3>").text(calculate_score.results[1].title));
+        $("#possible_answers").append($("<h3>").text(calculate_score.results[1].title + user_score));
 
       else if (user_score >= calculate_score.results[2].minpoints && user_score <= calculate_score.results[2].maxpoints)
-          c$("#possible_answers").append($("<h3>").text(calculate_score.results[2].title));
+          c$("#possible_answers").append($("<h3>").text(calculate_score.results[2].title + user_score));
     else if (user_score >= calculate_score.results[3].minpoints && user_score <= calculate_score.results[3].maxpoints)
-            $("#possible_answers").append($("<h3>").text(calculate_score.results[3].title));
+            $("#possible_answers").append($("<h3>").text(calculate_score.results[3].title + user_score));
 
   }
 
 });
-
-
-
-
 
 
   }
