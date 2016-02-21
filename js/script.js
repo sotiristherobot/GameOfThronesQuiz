@@ -12,6 +12,9 @@ $( document ).ready(function() {
   var picked_question_id;
   var calculate_score;
 
+  //for displaying percentage
+  var correct_questions = 0;
+
   /* Ajax call to get the data from the webserver */
   $.getJSON( "https://proto.io/en/jobs/candidate-questions/quiz.json",
     function( data ) {
@@ -29,7 +32,6 @@ $( document ).ready(function() {
   function resultData(result_data){
 
     calculate_score = result_data;
-    // console.log(calculate_score);
 
   }
   //update score
@@ -37,7 +39,7 @@ $( document ).ready(function() {
 
 
       user_score += questions_array[picked_question_id].points;
-      //console.log("Score " + user_score);
+      correct_questions += 1;
 
   }
 
@@ -55,6 +57,22 @@ $( document ).ready(function() {
   function pickQuestion(){
 
     var random_question_id =  Math.floor((Math.random() * questions_array.length ));
+    while(_.contains(already_picked_questions,random_question_id.toString())){
+
+         random_question_id =  Math.floor((Math.random() * questions_array.length ));
+
+    }
+    if (random_question_id == 0){
+      if (_.contains(already_picked_questions, "15") == false){
+        var tmp_picked_question = "15";
+        return random_question_id;
+     }
+     else {
+       pickQuestion()
+     }
+
+   }
+
 
     return random_question_id;
 
@@ -64,32 +82,40 @@ $( document ).ready(function() {
   function showQuestion(){
 
     picked_question_id = pickQuestion();
-
-
+    //
+    if (picked_question_id == 0)
+      already_picked_questions.push("15").toString();
+    else
+      already_picked_questions.push(picked_question_id.toString());
+    // console.log(picked_question_id);
     //wipe out everything
     $("#question").empty();
     $("#possible_answers").empty();
     question_correct_answers = [];
 
-    //check if the picked question has already been asked
-    while(_.contains(already_picked_questions,picked_question_id.toString()))
-    {
-        //console.log("Duplicate detected");
-        picked_question_id = pickQuestion();
-    }
-
-    //to handle the case when we get 0 position in the array but the question id is 1
-    if (picked_question_id == 0){
-
-      //if question 15 has not already been asked
-      if (_.contains(already_picked_questions, "15") == false){
-         var tmp_picked_question = "15";
-        already_picked_questions.push(tmp_picked_question.toString());
-
-    }
-    }
-    else
-      already_picked_questions.push(picked_question_id.toString());
+    // //check if the picked question has already been asked
+    // while(_.contains(already_picked_questions,picked_question_id.toString()))
+    // {
+    //     //console.log("Duplicate detected");
+    //     picked_question_id = pickQuestion();
+    // }
+    //
+    // //to handle the case when we get 0 position in the array but the question id is 1
+    // if (picked_question_id == 0){
+    //
+    //   //if question 15 has not already been asked
+    //   if (_.contains(already_picked_questions, "15") == false){
+    //      var tmp_picked_question = "15";
+    //     already_picked_questions.push(tmp_picked_question.toString());
+    //   }
+    //   else{
+    //
+    //
+    //
+    //   }
+    // }
+    // else
+    //   already_picked_questions.push(picked_question_id.toString());
 
     //determine the question type
     var question_type = questions_array[picked_question_id].question_type;
@@ -207,7 +233,7 @@ $( document ).ready(function() {
       for (var j = 0; j < user_answers.length; j++)
         temp_user_answers.push(user_answers[j].toString());
     }
-    
+
     var array_difference = _.difference(temp_correct_answers,temp_user_answers);
 
     if (array_difference.length == 0){
@@ -243,10 +269,9 @@ $( document ).ready(function() {
 
     }
 
-
     //check if all questions have been asked
     var all_questions_asked = _.difference(test_if_finished,already_picked_questions);
-
+    console.log(all_questions_asked.length);
     console.log(already_picked_questions);
     console.log(test_if_finished);
     if (all_questions_asked.length == 0){
@@ -317,15 +342,15 @@ $( document ).ready(function() {
 
       //display results according to score
       if (user_score >= calculate_score.results[0].minpoints && user_score <= calculate_score.results[0].maxpoints)
-        $("#possible_answers").append($("<h3>").text(calculate_score.results[0].title + user_score));
+        $("#possible_answers").append($("<h3>").text(calculate_score.results[0].title + correct_questions + "/15"));
 
       else if (user_score >= calculate_score.results[1].minpoints && user_score <= calculate_score.results[1].maxpoints)
-        $("#possible_answers").append($("<h3>").text(calculate_score.results[1].title + user_score));
+        $("#possible_answers").append($("<h3>").text(calculate_score.results[1].title + correct_questions + "/15"));
 
       else if (user_score >= calculate_score.results[2].minpoints && user_score <= calculate_score.results[2].maxpoints)
-          c$("#possible_answers").append($("<h3>").text(calculate_score.results[2].title + user_score));
+          c$("#possible_answers").append($("<h3>").text(calculate_score.results[2].title +  correct_questions + "/15"));
     else if (user_score >= calculate_score.results[3].minpoints && user_score <= calculate_score.results[3].maxpoints)
-            $("#possible_answers").append($("<h3>").text(calculate_score.results[3].title + user_score));
+            $("#possible_answers").append($("<h3>").text(calculate_score.results[3].title + correct_questions + "/15"));
 
   }
 
