@@ -63,7 +63,9 @@ $( document ).ready(function() {
 
     }
     if (random_question_id == 0){
-      if (_.contains(already_picked_questions, "15") == false){
+      var is_contained = _.contains(already_picked_questions, "15");
+      console.log(is_contained);
+      if ( is_contained == false){
         var tmp_picked_question = "15";
         return random_question_id;
      }
@@ -92,30 +94,6 @@ $( document ).ready(function() {
     $("#question").empty();
     $("#possible_answers").empty();
     question_correct_answers = [];
-
-    // //check if the picked question has already been asked
-    // while(_.contains(already_picked_questions,picked_question_id.toString()))
-    // {
-    //     //console.log("Duplicate detected");
-    //     picked_question_id = pickQuestion();
-    // }
-    //
-    // //to handle the case when we get 0 position in the array but the question id is 1
-    // if (picked_question_id == 0){
-    //
-    //   //if question 15 has not already been asked
-    //   if (_.contains(already_picked_questions, "15") == false){
-    //      var tmp_picked_question = "15";
-    //     already_picked_questions.push(tmp_picked_question.toString());
-    //   }
-    //   else{
-    //
-    //
-    //
-    //   }
-    // }
-    // else
-    //   already_picked_questions.push(picked_question_id.toString());
 
     //determine the question type
     var question_type = questions_array[picked_question_id].question_type;
@@ -341,15 +319,15 @@ $( document ).ready(function() {
       $("#possible_answers").empty();
 
       //display results according to score
-      if (user_score >= calculate_score.results[0].minpoints && user_score <= calculate_score.results[0].maxpoints)
+      if (Number(user_score) >= Number(calculate_score.results[0].minpoints) && Number(user_score) <= Number(calculate_score.results[0].maxpoints))
         $("#possible_answers").append($("<h3>").text(calculate_score.results[0].title + correct_questions + "/15"));
 
-      else if (user_score >= calculate_score.results[1].minpoints && user_score <= calculate_score.results[1].maxpoints)
+      else if (Number(user_score) >= Number(calculate_score.results[1].minpoints) && Number(user_score) <= Number(calculate_score.results[1].maxpoints))
         $("#possible_answers").append($("<h3>").text(calculate_score.results[1].title + correct_questions + "/15"));
 
-      else if (user_score >= calculate_score.results[2].minpoints && user_score <= calculate_score.results[2].maxpoints)
-          c$("#possible_answers").append($("<h3>").text(calculate_score.results[2].title +  correct_questions + "/15"));
-    else if (user_score >= calculate_score.results[3].minpoints && user_score <= calculate_score.results[3].maxpoints)
+      else if (Number(user_score) >= Number(calculate_score.results[2].minpoints) && Number(user_score) <= Number(calculate_score.results[2].maxpoints))
+          $("#possible_answers").append($("<h3>").text(calculate_score.results[2].title +  correct_questions + "/15"));
+    else if (Number(user_score) >= Number(calculate_score.results[3].minpoints) && Number(user_score) <= Number(calculate_score.results[3].maxpoints))
             $("#possible_answers").append($("<h3>").text(calculate_score.results[3].title + correct_questions + "/15"));
 
   }
