@@ -147,7 +147,6 @@ $( document ).ready(function() {
     //console.log(question_correct_answers + " correct answers");
     var temp = [];
     var temp2 = [];
-    
 
     if (typeof(question_correct_answers) == "number"){
 
@@ -155,20 +154,29 @@ $( document ).ready(function() {
 
     }
     else{
-      for (var i = 0; i < question_correct_answers.length; i ++)
-        temp.push(question_correct_answers[i]);
+      for (var i = 0; i < question_correct_answers.length; i++)
+        temp.push(question_correct_answers[i].toString());
 
     }
 
     if (typeof(user_answers) == "number")
       temp2.push(user_answers.toString());
-    console.log("user ansers" + user_answers);
-    console.log("temp " + temp );
-    if (compareArrays(user_answers, temp)){
+    else{
+      for (var j = 0; j < user_answers.length; j++)
+        temp2.push(user_answers[j].toString());
+    }
+
+    console.log(user_answers);
+    console.log(temp );
+
+    // alert(typeof(temp));
+    // alert(typeof(temp2));
+    // alert(_.isEqual(temp,temp2));
+    if (_.isEqual(temp,temp2)){
+
       $("#success_message").show();
       $("#success_message").delay(3000).fadeOut("slow");
       return true;
-
     }
 
     else {
@@ -176,7 +184,7 @@ $( document ).ready(function() {
       $("#fail_message").show();
       // alert(typeof(question_correct_answers));
       for (var j=0; j < temp.length; j++){
-        alert(temp[j]);
+        // alert(temp[j]);
         $('#' + temp[j]).css("background-color", "yellow");
 
       }
