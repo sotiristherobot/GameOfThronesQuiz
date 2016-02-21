@@ -7,6 +7,7 @@ $( document ).ready(function() {
   var question_correct_answers = [];
   var user_score = 0;
   var picked_question_id;
+  var calculate_score;
 
   /* Ajax call to get the data from the webserver */
   $.getJSON( "https://proto.io/en/jobs/candidate-questions/quiz.json",
@@ -15,12 +16,17 @@ $( document ).ready(function() {
       init(data);
       showQuestion(data);
   });
+  $.getJSON("http://proto.io/en/jobs/candidate-questions/result.json",function(result_data),
 
-  function compareArrays(arr1, arr2) {
-    return $(arr1).not(arr2).length == 0 && $(arr2).not(arr1).length == 0
-  };
+    resultData(result_data)
+  )
 
+  //result data
+  function resultData(result_data){
 
+    calculate_score = result_data;
+
+  }
   //update score
   function updateScore(points){
 
@@ -61,19 +67,31 @@ $( document ).ready(function() {
 
 
     //check if the picked question has already been asked
-    while (jQuery.inArray(picked_question_id.toString(), already_picked_questions) > -1){
-        console.log("Duplicate detected");
+    while(_.contains(already_picked_questions,picked_question_id.toString()))
+    {
+        //console.log("Duplicate detected");
         picked_question_id = pickQuestion();
     }
-    already_picked_questions.push(picked_question_id.toString());
+
+    if (picked_question_id == 0){
+
+      var tmp_picked_question = 15;
+      already_picked_questions.push(tmp_picked_question.toString());
+    }
+    else
+      already_picked_questions.push(picked_question_id.toString());
 
     //determine the question type
     var question_type = questions_array[picked_question_id].question_type;
 
+    //append the image
+    $('#image').empty().append('<img src=' + questions_array[picked_question_id].img + '>')
+      .css("height", "100")
+      .css("width", "100");
+
     if (question_type != "truefalse"){
       //pick the corresponding correct answers for this question
       question_correct_answers = questions_array[picked_question_id].correct_answer;
-
       //pick all the possible answers for this question
       var question_possible_answers = questions_array[picked_question_id].possible_answers;
     }
@@ -137,21 +155,27 @@ $( document ).ready(function() {
           "1" +  '">' + " " + "False" +
           "</span>" + "</br>");
 
-
-
     }
 
-  function validateAnswer(user_answers){
+  function validateAnswer(user_answers, typeofquestion){
 
-    // console.log(user_answers + " user answers");
-    //console.log(question_correct_answers + " correct answers");
+    console.log(user_answers + " user answers");
+    console.log(question_correct_answers + " correct answers");
     var temp = [];
     var temp2 = [];
-
+  //  console.log(typeof(question_correct_answers));
     if (typeof(question_correct_answers) == "number"){
-
+      console.log("number");
       temp.push(question_correct_answers.toString());
+    }
+    else if (typeofquestion=="truefalse"){
+        console.log(user_answers);
+      if (question_correct_answers == "true"){
+        temp.push("0");}
+      else if (question_correct_answers == "false")
+        temp.push("1");
 
+      console.log("temp " + temp);
     }
     else{
       for (var i = 0; i < question_correct_answers.length; i++)
@@ -159,21 +183,33 @@ $( document ).ready(function() {
 
     }
 
-    if (typeof(user_answers) == "number")
+    if (typeofquestion=="mutiplechoice-single"){
+
       temp2.push(user_answers.toString());
+    }
+    else if (typeofquestion=="truefalse"){
+        console.log(user_answers);
+        if (user_answers == "true")
+          temp2.push("0");
+        else if (user_answers == "false")
+          temp2.push("1");
+
+          console.log("temp2 " + temp2);
+      }
     else{
       for (var j = 0; j < user_answers.length; j++)
         temp2.push(user_answers[j].toString());
     }
 
-    console.log(user_answers);
-    console.log(temp );
+    //console.log(user_answers);
+    //console.log(temp );
 
     // alert(typeof(temp));
     // alert(typeof(temp2));
     // alert(_.isEqual(temp,temp2));
-    if (_.isEqual(temp,temp2)){
 
+    if ((_.difference(temp,temp2)).length == 0){
+      console.log(temp + " " + temp2);
       $("#success_message").show();
       $("#success_message").delay(3000).fadeOut("slow");
       return true;
@@ -206,9 +242,16 @@ $( document ).ready(function() {
     }
     // console.log(test);
     // console.log(already_picked_questions);
-      if (already_picked_questions.toString() == test)
-        return true;
+    // console.log("test " + test );
+    // console.log("already picked " + already_picked_questions);
 
+    var kokos = _.difference(test, already_picked_questions);
+
+
+    if (kokos.length == 0){
+        alert("We finish");
+        return true;
+      }
 
       return false;
 
@@ -226,7 +269,7 @@ $( document ).ready(function() {
       user_answers.push($('input[name=radio_group]:checked', '#possible_answers').val());
 
       //update score if question is answered correctly
-      if (validateAnswer(user_answers))
+      if (validateAnswer(user_answers, "mutiplechoice-single"))
         updateScore();
 
 
@@ -238,7 +281,7 @@ $( document ).ready(function() {
         return $(this).val();
       }).get();
       //update score if question is answered correctly
-      if (validateAnswer(user_answers))
+      if (validateAnswer(user_answers, "mutiplechoice-multiple"))
         updateScore();
 
     }
@@ -257,7 +300,7 @@ $( document ).ready(function() {
       }
 
 
-      if (validateAnswer(user_answers))
+      if (validateAnswer(user_answers, "truefalse"))
         updateScore();
 
     }
