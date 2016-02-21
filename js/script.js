@@ -16,16 +16,17 @@ $( document ).ready(function() {
       init(data);
       showQuestion(data);
   });
-  $.getJSON("http://proto.io/en/jobs/candidate-questions/result.json",function(result_data),
 
-    resultData(result_data)
-  )
-
+  $.getJSON( "https://proto.io/en/jobs/candidate-questions/result.json",
+    function( result ) {
+      //callback function to ensure that ajax has finished doing it's work
+      resultData(result);
+  });
   //result data
   function resultData(result_data){
 
     calculate_score = result_data;
-
+    console.log(calculate_score);
   }
   //update score
   function updateScore(points){
@@ -85,9 +86,9 @@ $( document ).ready(function() {
     var question_type = questions_array[picked_question_id].question_type;
 
     //append the image
-    $('#image').empty().append('<img src=' + questions_array[picked_question_id].img + '>')
-      .css("height", "100")
-      .css("width", "100");
+    $('#image').empty().append('<img src=' + questions_array[picked_question_id].img + ' id="imgsize" ' + '>');
+
+
 
     if (question_type != "truefalse"){
       //pick the corresponding correct answers for this question
@@ -312,9 +313,22 @@ $( document ).ready(function() {
 
     else{
 
-      alert("Score is " + user_score);
+      $("#question").empty();
+      $("#possible_answers").empty();
 
-    }
+      //display results according to score
+      if (user_score >= calculate_score.results[0].minpoints && user_score <= calculate_score.results[0].maxpoints)
+        $("#possible_answers").append($("<h3>").text(calculate_score.results[0].title));
+
+      else if (user_score >= calculate_score.results[1].minpoints && user_score <= calculate_score.results[1].maxpoints)
+        $("#possible_answers").append($("<h3>").text(calculate_score.results[1].title));
+
+      else if (user_score >= calculate_score.results[2].minpoints && user_score <= calculate_score.results[2].maxpoints)
+          c$("#possible_answers").append($("<h3>").text(calculate_score.results[2].title));
+    else if (user_score >= calculate_score.results[3].minpoints && user_score <= calculate_score.results[3].maxpoints)
+            $("#possible_answers").append($("<h3>").text(calculate_score.results[3].title));
+
+  }
 
 });
 
